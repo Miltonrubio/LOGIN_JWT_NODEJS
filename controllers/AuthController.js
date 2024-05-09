@@ -94,9 +94,9 @@ exports.validarLogin = async (req, res) => {
                         }
                     })
                 } else {
-                    const id = results[0].id
+                    const ID = results[0].ID
                     const nombre = results[0].nombre
-                    const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
+                    const token = jwt.sign({ ID: ID }, process.env.JWT_SECRET, {
                         expiresIn: process.env.JWT_TIEMPO_EXPIRA,
 
                     })
@@ -111,7 +111,7 @@ exports.validarLogin = async (req, res) => {
 
                     res.cookie('jwt', token, cookiesOptions)
 
-                    res.render("login",{
+                    res.render("login", {
 
                         data: {
                             alert: true,
@@ -139,34 +139,38 @@ exports.validarLogin = async (req, res) => {
 }
 
 
-exports.estaLogeado = async (req, res, next) =>{
-    if (req.cookies.jwt){
+exports.estaLogeado = async (req, res, next) => {
 
+    console.log("Paso por el autenticador")
+    if (req.cookies.jwt) {
         try {
-
             const decodifciada = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET)
 
-            conexion.query("SELECT * FROM usuarios WHERE id ?", [decodifciada.id], (error, results) => {
-
-                if(!results){
-                    return next()
+            conexion.query("SELECT * FROM usuarios WHERE ID = ?", [decodifciada.ID], (error, results) => {
+                if (!results || results.length === 0) {
+                    return next();
                 }
-                req.user = results[0]
-                return next()
-            })
+                req.usuarios = results[0];
+                return next();
+            });
+
         } catch (error) {
             console.log("Error " + error)
             return next()
         }
 
-    }else{
+    } else {
+        console.log("Sin usuario ")
+
         res.redirect("login")
     }
+
 }
 
 
 
-exports.logout = (req, res) =>{
+exports.logout = (req, res) => {
     res.clearCookie("jwt")
-    return res.redirect("");
+    console.log("Se cerro la sesion")
+    return res.redirect("login");
 }

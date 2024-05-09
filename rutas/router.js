@@ -11,7 +11,8 @@ const AuthController =  require("../controllers/AuthController")
 
 router.get("/", AuthController.estaLogeado, (req, res) =>{
   //  conexion.query()
-    res.render("index")
+    res.render("index", {user: req.usuarios})
+    console.log("Datos de usuario:" + req.usuarios)
 })
 
 

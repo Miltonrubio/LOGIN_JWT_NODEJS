@@ -1,5 +1,7 @@
-<h1>Buenos dias familia</h1>
-<p>Mondongo</p>
+<h1>Buenos dias: <% if (user) { %>
+<span class="badge bg-dark"><%= user.nombre %></span>
+<% } %>
+</h1>
 
 
 <a href="logout" type ="button" class="btn btn-danger" >Cerrar sesion </a>
